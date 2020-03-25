@@ -1,5 +1,5 @@
-#ifndef UAN_YXH_QL_H
-#define UAN_YXH_QL_H
+#ifndef UAN_YXH_QL2_H
+#define UAN_YXH_QL2_H
 
 #include "ns3/uan-module.h"
 
@@ -83,6 +83,11 @@ public:
     double gamma = 0.3;
     double rewardBase = 2;
     double k = 1;
+
+    uint32_t m_TrainCnt = 0;
+    uint32_t maxTrainCnt = 240;
+    uint32_t unitTrainCntForTrainStage = 5;
+    uint32_t unitTrainCntForTestStage = 30;
 };
 
-#endif  /*  UAN_YXH_QL_H  */
+#endif  /*  UAN_YXH_QL2_H  */

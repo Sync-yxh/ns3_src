@@ -120,11 +120,6 @@ void Agent::NewStateHandle(std::vector<State> QstateVec)
                 break;
             }
         }
-        // uint8_t id;
-        // nodeAction.CopyTo(&id);
-        // if(nodeState.id == id){
-        //     nodeState.connect --;
-        // }
         nodeAction = Mac8Address(nodeState.id);
         hasAction = true;
 
@@ -136,23 +131,6 @@ void Agent::NewStateHandle(std::vector<State> QstateVec)
         data.state = nodeState;
         data.action = true;
 
-        // bool flag = true;
-        // for(std::vector<State>::iterator iter = QstateVec.begin(); iter != QstateVec.end(); iter++)
-        // {
-        //     uint8_t id;
-        //     nodeAction.CopyTo(&id);
-        //     if(iter->id == id){
-        //         iter->connect --;
-        //         flag = false;
-        //     }
-        //     NS_LOG_INFO("ID: " << +iter->id << " | " << "connect: " << +iter->connect);
-        // }
-        // NS_LOG_INFO(" ");
-        // if(flag)
-        // {
-        // 	NS_LOG_INFO(" xxx ");
-        // }
-
         data.stateNextVec = QstateVec;
         data.reward = GetReward(nodeState, QstateVec);
         UpdataQ(data);
@@ -160,28 +138,6 @@ void Agent::NewStateHandle(std::vector<State> QstateVec)
     } break;
     case Stage::TEST:
     {
-        // uint8_t id1;
-        // uint8_t id2;
-        // if(nodeActionVec.empty()){
-        //     nodeAction.CopyTo(&id1);
-        //     id2 = id1;
-        // }
-        // else{
-        //     if(nodeActionVec.size()==1){
-        //         nodeActionVec[0].CopyTo(&id1);
-        //         id2 = id1;
-        //     }
-        //     else{
-        //         nodeActionVec[0].CopyTo(&id1);
-        //         nodeActionVec[1].CopyTo(&id2);
-        //     }
-        // }
-        // for(std::vector<State>::iterator iter = QstateVec.begin(); iter != QstateVec.end(); iter++)
-        // {
-        //     if(iter->id == id1 || iter->id == id2){
-        //         iter->connect --;
-        //     }
-        // }
         ChooseAction(QstateVec);
     } break;
     default:
@@ -374,7 +330,7 @@ int32_t Agent::GetReward(State old, std::vector<State> nextVec)
     }
     // the connect break
     else{
-        return -2*rewardBase;
+        return -3*rewardBase;
     }
 }
 
@@ -382,12 +338,18 @@ void Agent::UpdataQ(Step data)
 {
     if(QTable.find(data.state) == QTable.end()){
         QTable[data.state] = 0;
+        maxTrainCnt += unitTrainCntForTrainStage;
     }
     double oldQ = QTable[data.state];
     double maxNextQ = CalcMaxNextQ(data.stateNextVec);
 
     double newQ = oldQ + alpha*(data.reward + gamma*maxNextQ - oldQ);
     QTable[data.state] = newQ;
+
+    m_TrainCnt ++;
+    if(m_TrainCnt > maxTrainCnt){
+        stage = Stage::TEST;
+    }
 }
 
 double Agent::CalcMaxNextQ(std::vector<State> stateVec)
