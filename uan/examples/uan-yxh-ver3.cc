@@ -144,9 +144,9 @@ void Experiment::SetMobility()
     sensors.Get (7)->GetObject<MobilityModel> ()->SetPosition (Vector (3600, 1750, 0));
     sensors.Get (8)->GetObject<MobilityModel> ()->SetPosition (Vector (4300, 1900, 0));
 
-    velocity[nodes.Get(9)->GetId()].X = -0.4;
-    velocity[nodes.Get(9)->GetId()].Y = -0.01;
-    velocity[nodes.Get(10)->GetId()].X = -0.4;
+    velocity[nodes.Get(9)->GetId()].X = -0.04;
+    velocity[nodes.Get(9)->GetId()].Y = -0.001;
+    velocity[nodes.Get(10)->GetId()].X = -0.04;
     velocity[nodes.Get(10)->GetId()].Y = 0; 
     boundary[nodes.Get(9)->GetId()].lowerX = 200;
     boundary[nodes.Get(9)->GetId()].upperX = 3000;
@@ -156,7 +156,7 @@ void Experiment::SetMobility()
 
 void Experiment::UpdateMobility()
 {
-    for(uint32_t id;id<nodeNums;id++)
+    for(uint32_t id = 0; id<nodeNums; id++)
     {
         if(velocity.find(id) != velocity.end()){
             Vector pos = nodes.Get(id)->GetObject<MobilityModel>()->GetPosition();
@@ -243,6 +243,7 @@ void Experiment::ScheduleInit()
     Simulator::Schedule (Seconds (gapStateData), &Experiment::ScheduleSendData, this);
     Simulator::Schedule (Minutes (gapStateState), &Experiment::ScheduleBeacon, this);
     Simulator::Schedule (Minutes (gapTrainTest), &Experiment::ChangeAgentStage, this);
+    Simulator::Schedule (Minutes (gapUpdateMob), &Experiment::UpdateMobility, this);
 }
 
 void Experiment::ScheduleBeacon()
@@ -635,6 +636,7 @@ int main (int argc, char *argv[])
     experiment.ScheduleInit();
 
     AnimationInterface anim("uan_yxh.xml");
+    anim.SetMaxPktsPerTraceFile(600000);
     experiment.SetAnimNodesSize(anim);
   
     Simulator::Stop (Minutes (experiment.simulatorTime));
