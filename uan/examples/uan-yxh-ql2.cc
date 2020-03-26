@@ -222,6 +222,7 @@ void Agent::ChooseAction(std::vector<State> QstateVec)
         actionVecindex = 0;
         if(QstateVec.size()==1){
             nodeActionVec.push_back(Mac8Address(QstateVec[0].id));
+            staticActionVec.push_back(nodeAction);
         }
         else{
             double maxQ2 = INT_MIN;
