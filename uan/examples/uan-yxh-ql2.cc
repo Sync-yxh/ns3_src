@@ -134,10 +134,12 @@ void Agent::NewStateHandle(std::vector<State> QstateVec)
         data.stateNextVec = QstateVec;
         data.reward = GetReward(nodeState, QstateVec);
         UpdataQ(data);
+        CheckNewState(QstateVec)
         ChooseAction(QstateVec);
     } break;
     case Stage::TEST:
     {
+        CheckNewState(QstateVec)
         ChooseAction(QstateVec);
     } break;
     default:
@@ -248,21 +250,6 @@ void Agent::ChooseAction(std::vector<State> QstateVec)
                 staticActionVec.push_back(Mac8Address(maxS1.id));
                 staticActionVec.push_back(Mac8Address(maxS2.id));
             }
-            // else if(maxQ2 > 0 && maxQ1 > 0){
-            //     int32_t p = maxQ1/maxQ2 * 10;
-            //     for(int32_t i = 0;i<10;i++)
-            //     {
-            //         nodeActionVec.push_back(Mac8Address(maxS1.id));
-            //         nodeActionVec.push_back(Mac8Address(maxS2.id));
-            //     }
-            //     for(int32_t i = 0;i<(p-10);i++)
-            //     {
-            //         nodeActionVec.push_back(Mac8Address(maxS1.id));
-            //     }
-            // }
-            // else if(maxQ2 ==0 && maxQ1 > 0){
-            //     nodeActionVec.push_back(Mac8Address(maxS1.id));
-            // }
             else{
                 nodeActionVec.push_back(Mac8Address(maxS1.id));
                 staticActionVec.push_back(Mac8Address(maxS1.id));
@@ -338,18 +325,12 @@ void Agent::UpdataQ(Step data)
 {
     if(QTable.find(data.state) == QTable.end()){
         QTable[data.state] = 0;
-        maxTrainCnt += unitTrainCntForTrainStage;
     }
     double oldQ = QTable[data.state];
     double maxNextQ = CalcMaxNextQ(data.stateNextVec);
 
     double newQ = oldQ + alpha*(data.reward + gamma*maxNextQ - oldQ);
     QTable[data.state] = newQ;
-
-    m_TrainCnt ++;
-    if(m_TrainCnt > maxTrainCnt){
-        stage = Stage::TEST;
-    }
 }
 
 double Agent::CalcMaxNextQ(std::vector<State> stateVec)
@@ -371,4 +352,26 @@ double Agent::CalcMaxNextQ(std::vector<State> stateVec)
     }
 
     return maxQ;
+}
+
+void Agent::CheckNewState(std::vector<State> stateVec)
+{
+    for(std::vector<State>::iterator iter = stateVec.begin(); iter != stateVec.end(); iter++)
+    {
+        State one = *iter;
+        if(QTable.find(one) == QTable.end()){
+            maxTrainCnt += unitTrainCntForTrainStage;
+            break;
+        }
+    }
+
+    m_TrainCnt ++;
+    if(m_TrainCnt > maxTrainCnt){
+        stage = Stage::TEST;
+    }
+    // else{
+    //     if(stage == Stage::TEST){
+    //         stage = Stage::TRAIN;
+    //     }
+    // }
 }

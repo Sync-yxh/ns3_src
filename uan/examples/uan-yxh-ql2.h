@@ -68,6 +68,8 @@ public:
 
     int32_t GetReward(State old, std::vector<State> nextVec);
 
+    void CheckNewState(std::vector<State> stateVec);
+
     std::map<State, double> QTable;
     
     Stage stage = Stage::INIT;
