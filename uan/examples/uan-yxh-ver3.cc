@@ -243,7 +243,7 @@ void Experiment::ScheduleInit()
     Simulator::Schedule (Seconds (gapStateData), &Experiment::ScheduleSendData, this);
     Simulator::Schedule (Minutes (gapStateState), &Experiment::ScheduleBeacon, this);
     // Simulator::Schedule (Minutes (gapTrainTest), &Experiment::ChangeAgentStage, this);
-    Simulator::Schedule (Minutes (gapUpdateMob), &Experiment::UpdateMobility, this);
+    // Simulator::Schedule (Minutes (gapUpdateMob), &Experiment::UpdateMobility, this);
 }
 
 void Experiment::ScheduleBeacon()

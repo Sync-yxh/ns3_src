@@ -25,11 +25,11 @@ def build(bld):
     obj = bld.create_ns3_program('uan-yxh', ['internet', 'mobility', 'stats', 'applications', 'uan','netanim'])
     obj.source = 'uan-yxh.cc'
 
-    obj = bld.create_ns3_program('uan-yxh-queue', ['internet', 'mobility', 'stats', 'applications', 'uan','netanim'])
-    obj.source = 'uan-yxh-queue.cc'
+    ## obj = bld.create_ns3_program('uan-yxh-queue', ['internet', 'mobility', 'stats', 'applications', 'uan','netanim'])
+    ## obj.source = 'uan-yxh-queue.cc'
 
-    obj = bld.create_ns3_program('uan-yxh-ver', ['internet', 'mobility', 'stats', 'applications', 'uan','netanim',])
-    obj.source = 'uan-yxh-ver.cc'
+    ## obj = bld.create_ns3_program('uan-yxh-ver', ['internet', 'mobility', 'stats', 'applications', 'uan','netanim',])
+    ## obj.source = 'uan-yxh-ver.cc'
 
     obj = bld.create_ns3_program('uan-yxh-ver2', ['internet', 'mobility', 'stats', 'applications', 'uan','netanim',])
     obj.source = 'uan-yxh-ver2.cc'
