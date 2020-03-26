@@ -106,7 +106,7 @@ public:
     NodeContainer sensors;
 
     UanHelper uan;
-    uint8_t randomSeed;
+    uint32_t randomSeed;
 
     struct bound
     {
