@@ -134,12 +134,12 @@ void Agent::NewStateHandle(std::vector<State> QstateVec)
         data.stateNextVec = QstateVec;
         data.reward = GetReward(nodeState, QstateVec);
         UpdataQ(data);
-        CheckNewState(QstateVec)
+        CheckNewState(QstateVec);
         ChooseAction(QstateVec);
     } break;
     case Stage::TEST:
     {
-        CheckNewState(QstateVec)
+        CheckNewState(QstateVec);
         ChooseAction(QstateVec);
     } break;
     default:
@@ -369,9 +369,9 @@ void Agent::CheckNewState(std::vector<State> stateVec)
     if(m_TrainCnt > maxTrainCnt){
         stage = Stage::TEST;
     }
-    // else{
-    //     if(stage == Stage::TEST){
-    //         stage = Stage::TRAIN;
-    //     }
-    // }
+    else{
+        if(stage == Stage::TEST){
+            stage = Stage::TRAIN;
+        }
+    }
 }
