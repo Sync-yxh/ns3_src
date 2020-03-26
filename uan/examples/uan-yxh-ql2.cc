@@ -172,7 +172,7 @@ void Agent::ChooseAction(std::vector<State> QstateVec)
         // double k = 1;  // coef
         //double base = ( (maxQ - minQ) * k * minQ - rewardBase * maxQ ) / ( (maxQ - minQ) * k - rewardBase );
         double base = minQ - rewardBase/k;
-        k += 0.02;
+        k += 0.04;
         std::vector<double> prob;
         double diffSum = 0;
         for(std::vector<State>::iterator iter = QstateVec.begin(); iter != QstateVec.end(); iter++)
@@ -372,6 +372,7 @@ void Agent::CheckNewState(std::vector<State> stateVec)
     else{
         if(stage == Stage::TEST){
             stage = Stage::TRAIN;
+            k -= 3;
         }
     }
 }

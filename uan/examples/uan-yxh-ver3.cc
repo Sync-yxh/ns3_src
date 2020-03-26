@@ -150,7 +150,7 @@ void Experiment::SetMobility()
     velocity[nodes.Get(10)->GetId()].Y = 0; 
     boundary[nodes.Get(9)->GetId()].lowerX = 200;
     boundary[nodes.Get(9)->GetId()].upperX = 3000;
-    boundary[nodes.Get(10)->GetId()].lowerX = 1000;
+    boundary[nodes.Get(10)->GetId()].lowerX = 2000;
     boundary[nodes.Get(10)->GetId()].upperX = 3800;
 }
 
@@ -243,7 +243,7 @@ void Experiment::ScheduleInit()
     Simulator::Schedule (Seconds (gapStateData), &Experiment::ScheduleSendData, this);
     Simulator::Schedule (Minutes (gapStateState), &Experiment::ScheduleBeacon, this);
     // Simulator::Schedule (Minutes (gapTrainTest), &Experiment::ChangeAgentStage, this);
-    // Simulator::Schedule (Minutes (gapUpdateMob), &Experiment::UpdateMobility, this);
+    Simulator::Schedule (Minutes (gapUpdateMob), &Experiment::UpdateMobility, this);
 }
 
 void Experiment::ScheduleBeacon()
