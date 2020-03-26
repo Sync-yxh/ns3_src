@@ -629,8 +629,8 @@ int main (int argc, char *argv[])
     LogComponentEnable("UanYXH", LOG_LOGIC);
     // LogComponentEnable("UanYXHQL", LOG_INFO);
 
-    NS_ASSERT(true);
-    //NS_ASSERT(false);
+    NS_LOG_LOGIC(" Random Seed:  " << +experiment.randomSeed);
+    NS_LOG_LOGIC(" Simulator Time:  " << +experiment.simulatorTime);
 
     experiment.Prepare();
     experiment.ScheduleInit();
