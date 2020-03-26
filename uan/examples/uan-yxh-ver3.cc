@@ -636,7 +636,7 @@ int main (int argc, char *argv[])
     experiment.ScheduleInit();
 
     AnimationInterface anim("uan_yxh.xml");
-    anim.SetMaxPktsPerTraceFile(600000);
+    anim.SetMaxPktsPerTraceFile(6000000);
     experiment.SetAnimNodesSize(anim);
   
     Simulator::Stop (Minutes (experiment.simulatorTime));
