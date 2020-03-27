@@ -260,7 +260,7 @@ void Experiment::ScheduleBeacon()
     NS_LOG_LOGIC(" Beacon " << Simulator::Now ().GetSeconds () << "s");
     if(protocal == 3){
         std::map<Mac8Address,std::map<uint32_t,uint32_t>> staticPktTotalDBR;
-        for(NodeContainer::Iterator nodeIter = sinks.Begin(); nodeIter != nodes.End(); nodeIter++)
+        for(NodeContainer::Iterator nodeIter = sinks.Begin(); nodeIter != sinks.End(); nodeIter++)
         {
             uint32_t nodeId = (*nodeIter)->GetId();
             std::map<Mac8Address,std::map<uint32_t,uint32_t>> singleRecv = staticRecieveRecordForDBR[nodeId];
