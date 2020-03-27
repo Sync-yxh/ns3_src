@@ -622,11 +622,13 @@ bool Experiment::ChooseNextHop(Ptr<Node> node, Mac8Address& next)
         if(staticNextHopBackup[nodeId].empty()){
             return false;
         }
-        next = staticNextHopBackup[nodeId][AVEindex[nodeId]];
-        if(AVEindex[nodeId] == staticNextHopBackup[nodeId].size()-1 ){
+        if(AVEindex[nodeId] > staticNextHopBackup[nodeId].size()-1 ){
             AVEindex[nodeId] = 0;
+            next = staticNextHopBackup[nodeId][AVEindex[nodeId]];
+            AVEindex[nodeId] ++;
         }
         else{
+        	next = staticNextHopBackup[nodeId][AVEindex[nodeId]];
             AVEindex[nodeId] ++;
         }
         agent[nodeId].nodeAction = next;
