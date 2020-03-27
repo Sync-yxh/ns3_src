@@ -66,6 +66,8 @@ void Experiment::SetNodes()
         QstateVector[nodeId].clear();
 
         AVEindex[nodeId] = 0;
+        staticActionOtherProt[nodeId].clear();
+        staticRecieveRecordForDBR[nodeId].clear();
     }
     staticSumPacket.clear();
 }
@@ -256,6 +258,30 @@ void Experiment::ScheduleBeacon()
 
     staticSumPacket.push_back(0);
     NS_LOG_LOGIC(" Beacon " << Simulator::Now ().GetSeconds () << "s");
+    if(protocal == 3){
+        std::map<Mac8Address,std::map<uint32_t,uint32_t>> staticPktTotalDBR;
+        for(NodeContainer::Iterator nodeIter = sinks.Begin(); nodeIter != nodes.End(); nodeIter++)
+        {
+            uint32_t nodeId = *nodeIter->GetId();
+            std::map<Mac8Address,std::map<uint32_t,uint32_t>> singleRecv = staticRecieveRecordForDBR[nodeId];
+            std::map<Mac8Address,std::map<uint32_t,uint32_t>>::Iterator s_iter = singleRecv.begin();
+            for(;s_iter != singleRecv.end(); s_iter++)
+            {
+                Mac8Address s_src = s_iter->first;
+                std::map<uint32_t,uint32_t>> i_map = s_iter->second;
+                for(std::map<uint32_t,uint32_t>>::Iterator i_iter = i_map.begin(); i_iter!=i_map.end();i_iter++)
+                {
+                    uint32_t indexkey = i_iter->first;
+                    staticPktTotalDBR[s_src][indexkey] = 1;
+                }
+            }
+            staticRecieveRecordForDBR[nodeId].clear();
+        }
+        for(std::map<Mac8Address,std::map<uint32_t,uint32_t>>::Iterator iter = staticPktTotalDBR.begin(); iter!=staticPktTotalDBR.end(); iter++)
+        {
+            staticSumPacket[staticSumPacket.size()-1] += iter->second.size();
+        }
+    }
 
     for(NodeContainer::Iterator nodeIter = nodes.Begin(); nodeIter != nodes.End(); nodeIter++)
     {
@@ -279,13 +305,15 @@ void Experiment::ScheduleBeacon()
 
         // static recieve nums and sinks' total nums
         uint32_t staticNum = 0;
-        for(std::map<Mac8Address,uint32_t>::iterator iter = staticRecieveRecord[nodeId].begin(); iter != staticRecieveRecord[nodeId].end(); iter++)
-        {
-            staticNum += iter->second;
-        }
-        if(sinks.Contains(node->GetId()))
-        {
-            staticSumPacket[staticSumPacket.size()-1] += staticNum;
+        if(protocal != 3){
+            for(std::map<Mac8Address,uint32_t>::iterator iter = staticRecieveRecord[nodeId].begin(); iter != staticRecieveRecord[nodeId].end(); iter++)
+            {
+                staticNum += iter->second;
+            }
+            if(sinks.Contains(node->GetId()))
+            {
+                staticSumPacket[staticSumPacket.size()-1] += staticNum;
+            }
         }
         staticConnect[nodeId].push_back(connect);
         staticBandwidth[nodeId].push_back(bandwidth);
@@ -477,7 +505,7 @@ void Experiment::RecvHandle(Ptr<Socket> socket,Ptr<Packet> pkt)
         Mac8Address dst = tag.GetDestAddress();
         Mac8Address src = tag.GetSourceAddress();
         uint32_t index = tag.GetPacketIndex();
-        if(dst == self)
+        if(dst == self && protocal != 3)
         {
             Mac8Address relay = tag.GetRelayAddress();
             if(staticRecieveRecord[nodeId].find(relay) != staticRecieveRecord[nodeId].end())
@@ -506,15 +534,10 @@ void Experiment::RecvHandle(Ptr<Socket> socket,Ptr<Packet> pkt)
                 }
             }
         }
-        else if(dst == Mac8Address(255)){
-            Mac8Address relay = tag.GetRelayAddress();
-            if(staticRecieveRecord[nodeId].find(relay) != staticRecieveRecord[nodeId].end())
+        else if(dst == Mac8Address(255) && protocal == 3){
+            if(sinks.Contains(nodeId))
             {
-                staticRecieveRecord[nodeId][relay] ++;
-            }
-            else
-            {
-                staticRecieveRecord[nodeId][relay] = 1;
+                staticRecieveRecordForDBR[nodeId][src][index] = 1;
             }
             if(sensors.Contains(nodeId)){
                 tag.SetRelayAddress(self);
@@ -562,13 +585,15 @@ void Experiment::StatePacketHandle(Ptr<Node> node,  UanPacketTag tag)
 
 void Experiment::UpdateAgent()
 {
-    NS_LOG_LOGIC(" UpdataAgent " << Simulator::Now ().GetSeconds () << "s");
-    for(NodeContainer::Iterator nodeIter = nodes.Begin(); nodeIter != nodes.End(); nodeIter++)
-    {
-        Ptr<Node> node = *nodeIter;
-        uint32_t nodeId = node->GetId();
+    if(protocal == 1){
+        NS_LOG_LOGIC(" UpdataAgent " << Simulator::Now ().GetSeconds () << "s");
+        for(NodeContainer::Iterator nodeIter = nodes.Begin(); nodeIter != nodes.End(); nodeIter++)
+        {
+            Ptr<Node> node = *nodeIter;
+            uint32_t nodeId = node->GetId();
 
-        agent[nodeId].NewStateHandle(QstateVector[nodeId]);
+            agent[nodeId].NewStateHandle(QstateVector[nodeId]);
+        }
     }
 }
 
@@ -605,6 +630,7 @@ bool Experiment::ChooseNextHop(Ptr<Node> node, Mac8Address& next)
             AVEindex[nodeId] ++;
         }
         agent[nodeId].nodeAction = next;
+        staticActionOtherProt[nodeId].push_back(next);
         return true;
     } break;
     case 3:{        //DBR
@@ -616,6 +642,7 @@ bool Experiment::ChooseNextHop(Ptr<Node> node, Mac8Address& next)
             return false;
         }
         next = staticNextHopBackup[nodeId].front();
+        staticActionOtherProt[nodeId].push_back(next);
         return true;
     } break;
     default:
@@ -643,7 +670,24 @@ void Experiment::WriteToFile(std::string filename,std::string filenameA)
     for(NodeContainer::Iterator node = sensors.Begin(); node != sensors.End(); node++)
     {
         uint32_t nodeId = (*node)->GetId();
-        std::vector<Mac8Address> action = agent[nodeId].staticActionVec;
+        std::vector<Mac8Address> action;
+        switch (protocal)
+        {
+        case 1:{
+            action = agent[nodeId].staticActionVec;
+        } break;
+        case 2:{
+            action = staticActionOtherProt[nodeId];
+        } break;
+        case 3:{
+            action.push_back(Mac8Address(255));
+        } break;
+        case 4:{
+            action = staticActionOtherProt[nodeId];
+        } break;
+        default:
+            break;
+        }
         std::string name = filenameA + std::to_string(nodeId) + std::string(".csv");
         std::ofstream file_a(name.c_str());
         if(file_a.is_open()){

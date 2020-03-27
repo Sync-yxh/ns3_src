@@ -127,6 +127,8 @@ public:
     std::map<uint32_t, bound> boundary;
 
     std::map<uint32_t,uint32_t> AVEindex;
+    std::map<uint32_t, std::vector<Mac8Address>> staticActionOtherProt;
+    std::map<uint32_t, std::map<Mac8Address,std::map<uint32_t,uint32_t>>> staticRecieveRecordForDBR;
 
 };
 
