@@ -318,7 +318,8 @@ int32_t Agent::GetReward(State old, std::vector<State> nextVec)
     }
     // the connect break
     else{
-        return -3*rewardBase;
+        //return -3*rewardBase;
+        return 0;
     }
 }
 
@@ -361,19 +362,24 @@ void Agent::CheckNewState(std::vector<State> stateVec)
     {
         State one = *iter;
         if(QTable.find(one) == QTable.end()){
-            maxTrainCnt += unitTrainCntForTrainStage;
+        	if(stage == Stage::TRAIN){
+        		maxTrainCnt += unitTrainCntForTrainStage;
+        	}
+        	else{
+        		maxTrainCnt += unitTrainCntForTestStage;
+        	}
             break;
         }
     }
-
-    m_TrainCnt ++;
-    if(m_TrainCnt > maxTrainCnt){
-        stage = Stage::TEST;
+    if(stage == Stage::TRAIN){
+    	m_TrainCnt ++;
+    	if(m_TrainCnt > maxTrainCnt){
+			stage = Stage::TEST;
+		}
     }
     else{
-        if(stage == Stage::TEST){
-            stage = Stage::TRAIN;
-            k -= 3;
-        }
+    	if(m_TrainCnt < maxTrainCnt){
+    		stage = Stage::TRAIN;
+    	}
     }
 }
