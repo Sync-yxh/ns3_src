@@ -169,8 +169,10 @@ void Experiment::UpdateMobility()
             newpos.x += velocity[id].X * gapUpdateMob * 60;
             newpos.y += velocity[id].Y * gapUpdateMob * 60;
             if(newpos.x > boundary[id].upperX || newpos.x < boundary[id].lowerX){
-                velocity[id].X = -1 * velocity[id].X;
-                velocity[id].Y = -1 * velocity[id].Y;
+                // velocity[id].X = -1 * velocity[id].X;
+                // velocity[id].Y = -1 * velocity[id].Y;
+                velocity[id].X = 0;
+                velocity[id].Y = 0;
             }
             else{
                 nodes.Get(id)->GetObject<MobilityModel>()->SetPosition(newpos);

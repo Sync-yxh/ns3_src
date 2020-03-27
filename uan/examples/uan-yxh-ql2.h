@@ -87,8 +87,8 @@ public:
     double k = 1;
 
     uint32_t m_TrainCnt = 0;
-    uint32_t maxTrainCnt = 220;
-    uint32_t unitTrainCntForTrainStage = 5;
+    uint32_t maxTrainCnt = 240;
+    uint32_t unitTrainCntForTrainStage = 10;
     uint32_t unitTrainCntForTestStage = 30;
 };
 
