@@ -262,14 +262,14 @@ void Experiment::ScheduleBeacon()
         std::map<Mac8Address,std::map<uint32_t,uint32_t>> staticPktTotalDBR;
         for(NodeContainer::Iterator nodeIter = sinks.Begin(); nodeIter != nodes.End(); nodeIter++)
         {
-            uint32_t nodeId = *nodeIter->GetId();
+            uint32_t nodeId = (*nodeIter)->GetId();
             std::map<Mac8Address,std::map<uint32_t,uint32_t>> singleRecv = staticRecieveRecordForDBR[nodeId];
-            std::map<Mac8Address,std::map<uint32_t,uint32_t>>::Iterator s_iter = singleRecv.begin();
+            std::map<Mac8Address,std::map<uint32_t,uint32_t>>::iterator s_iter = singleRecv.begin();
             for(;s_iter != singleRecv.end(); s_iter++)
             {
                 Mac8Address s_src = s_iter->first;
-                std::map<uint32_t,uint32_t>> i_map = s_iter->second;
-                for(std::map<uint32_t,uint32_t>>::Iterator i_iter = i_map.begin(); i_iter!=i_map.end();i_iter++)
+                std::map<uint32_t,uint32_t> i_map = s_iter->second;
+                for(std::map<uint32_t,uint32_t>::iterator i_iter = i_map.begin(); i_iter!=i_map.end();i_iter++)
                 {
                     uint32_t indexkey = i_iter->first;
                     staticPktTotalDBR[s_src][indexkey] = 1;
@@ -277,7 +277,7 @@ void Experiment::ScheduleBeacon()
             }
             staticRecieveRecordForDBR[nodeId].clear();
         }
-        for(std::map<Mac8Address,std::map<uint32_t,uint32_t>>::Iterator iter = staticPktTotalDBR.begin(); iter!=staticPktTotalDBR.end(); iter++)
+        for(std::map<Mac8Address,std::map<uint32_t,uint32_t>>::iterator iter = staticPktTotalDBR.begin(); iter!=staticPktTotalDBR.end(); iter++)
         {
             staticSumPacket[staticSumPacket.size()-1] += iter->second.size();
         }
