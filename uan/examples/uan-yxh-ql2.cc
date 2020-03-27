@@ -379,7 +379,7 @@ void Agent::CheckNewState(std::vector<State> stateVec)
     }
     else{
     	if(m_TrainCnt < maxTrainCnt){
-    		stage = Stage::TRAIN;
+    		//stage = Stage::TRAIN;
     	}
     }
 }
