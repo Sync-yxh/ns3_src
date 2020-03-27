@@ -25,7 +25,8 @@ Experiment::Experiment():
     gapStateState(5),       // minite
     gapTrainTest(1200.03),    // minite
     gapUpdateMob(2.5),   //minite
-    randomSeed(55)
+    randomSeed(55),
+    protocal("QL")
 {
 }
 
@@ -63,6 +64,8 @@ void Experiment::SetNodes()
         staticNextHopBackup[nodeId].clear();
 
         QstateVector[nodeId].clear();
+
+        AVEindex[nodeId] = 0;
     }
     staticSumPacket.clear();
 }
@@ -489,7 +492,33 @@ void Experiment::RecvHandle(Ptr<Socket> socket,Ptr<Packet> pkt)
             NS_LOG_INFO( "Time: " << Simulator::Now ().GetSeconds () << "s" << " Node " << self << " recv data pkt from Node " << src);
 
             if(sensors.Contains(nodeId)){
+                uint32_t depth = tag.GetDepth();
+                uint32_t m_depth = node->GetObject<MobilityModel>()->GetPosition().y;
+                if(depth > m_depth){
+                    tag.SetRelayAddress(self);
+                    if(ChooseNextHop(node, dst))
+                    {
+                        tag.SetDestAddress(dst);
+                        pkt->RemoveAllPacketTags();
+                        pkt->AddPacketTag(tag);
+                        SendSinglePacket(node,pkt,dst,false);
+                    }
+                }
+            }
+        }
+        else if(dst == Mac8Address(255)){
+            Mac8Address relay = tag.GetRelayAddress();
+            if(staticRecieveRecord[nodeId].find(relay) != staticRecieveRecord[nodeId].end())
+            {
+                staticRecieveRecord[nodeId][relay] ++;
+            }
+            else
+            {
+                staticRecieveRecord[nodeId][relay] = 1;
+            }
+            if(sensors.Contains(nodeId)){
                 tag.SetRelayAddress(self);
+
                 if(ChooseNextHop(node, dst))
                 {
                     tag.SetDestAddress(dst);
@@ -549,17 +578,50 @@ bool Experiment::ChooseNextHop(Ptr<Node> node, Mac8Address& next)
         return false;
     }
     uint32_t nodeId = node->GetId();
-    if(agent[nodeId].GetAction(next)){
+    switch (protocal)
+    {
+    case "QL":{
+        if(agent[nodeId].GetAction(next)){
+            return true;
+        }
+        else{
+            if(staticNextHopBackup[nodeId].empty()){
+                return false;
+            }
+            next = staticNextHopBackup[nodeId].front();
+            agent[nodeId].nodeAction = next;
+            return true;
+        }
+    } break;
+    case "AVE":{
+        if(staticNextHopBackup[nodeId].empty()){
+            return false;
+        }
+        next = staticNextHopBackup[nodeId][AVEindex[nodeId]];
+        if(AVEindex[nodeId] == staticNextHopBackup[nodeId].size()-1 ){
+            AVEindex[nodeId] = 0;
+        }
+        else{
+            AVEindex[nodeId] ++;
+        }
+        agent[nodeId].nodeAction = next;
         return true;
-    }
-    else{
+    } break;
+    case "DBR":{
+        next = Mac8Address(255);
+        return true;
+    } break;
+    case "Random":{
         if(staticNextHopBackup[nodeId].empty()){
             return false;
         }
         next = staticNextHopBackup[nodeId].front();
-        agent[nodeId].nodeAction = next;
         return true;
+    } break;
+    default:
+        break;
     }
+    return false;
 }
 
 void Experiment::WriteToFile(std::string filename,std::string filenameA)
@@ -619,7 +681,8 @@ int main (int argc, char *argv[])
 
     CommandLine cmd;
     cmd.AddValue ("seed", "Random Seed", experiment.randomSeed); 
-    cmd.AddValue ("time", "Simulator Time", experiment.simulatorTime); 
+    cmd.AddValue ("time", "Simulator Time", experiment.simulatorTime);
+    cmd.AddValue ("protocal", "Protocal", experiment.protocal)
     cmd.Parse (argc, argv);
 
     // LogComponentEnable ("UanYXH", LOG_INFO);

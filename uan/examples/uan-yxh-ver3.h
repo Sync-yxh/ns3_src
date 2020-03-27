@@ -107,6 +107,7 @@ public:
 
     UanHelper uan;
     uint32_t randomSeed;
+    string protocal;
 
     struct bound
     {
@@ -124,6 +125,8 @@ public:
 
     std::map<uint32_t, speed> velocity;
     std::map<uint32_t, bound> boundary;
+
+    std::map<uint32_t,uint32_t> AVEindex;
 
 };
 
