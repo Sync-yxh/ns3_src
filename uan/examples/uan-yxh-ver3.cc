@@ -26,7 +26,7 @@ Experiment::Experiment():
     gapTrainTest(1200.03),    // minite
     gapUpdateMob(2.5),   //minite
     randomSeed(55),
-    protocal("QL")
+    protocal(1)
 {
 }
 
@@ -580,7 +580,7 @@ bool Experiment::ChooseNextHop(Ptr<Node> node, Mac8Address& next)
     uint32_t nodeId = node->GetId();
     switch (protocal)
     {
-    case "QL":{
+    case 1:{        //QL
         if(agent[nodeId].GetAction(next)){
             return true;
         }
@@ -593,7 +593,7 @@ bool Experiment::ChooseNextHop(Ptr<Node> node, Mac8Address& next)
             return true;
         }
     } break;
-    case "AVE":{
+    case 2:{        //AVE
         if(staticNextHopBackup[nodeId].empty()){
             return false;
         }
@@ -607,11 +607,11 @@ bool Experiment::ChooseNextHop(Ptr<Node> node, Mac8Address& next)
         agent[nodeId].nodeAction = next;
         return true;
     } break;
-    case "DBR":{
+    case 3:{        //DBR
         next = Mac8Address(255);
         return true;
     } break;
-    case "Random":{
+    case 4:{        //Random
         if(staticNextHopBackup[nodeId].empty()){
             return false;
         }
@@ -682,7 +682,7 @@ int main (int argc, char *argv[])
     CommandLine cmd;
     cmd.AddValue ("seed", "Random Seed", experiment.randomSeed); 
     cmd.AddValue ("time", "Simulator Time", experiment.simulatorTime);
-    cmd.AddValue ("protocal", "Protocal", experiment.protocal)
+    cmd.AddValue ("protocal", "Protocal", experiment.protocal);
     cmd.Parse (argc, argv);
 
     // LogComponentEnable ("UanYXH", LOG_INFO);
@@ -694,6 +694,7 @@ int main (int argc, char *argv[])
 
     NS_LOG_LOGIC(" Random Seed:  " << +experiment.randomSeed);
     NS_LOG_LOGIC(" Simulator Time:  " << +experiment.simulatorTime);
+    NS_LOG_LOGIC(" Protocal:  " << experiment.protocal);
 
     experiment.Prepare();
     experiment.ScheduleInit();

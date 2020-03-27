@@ -107,7 +107,7 @@ public:
 
     UanHelper uan;
     uint32_t randomSeed;
-    string protocal;
+    uint32_t protocal;
 
     struct bound
     {
