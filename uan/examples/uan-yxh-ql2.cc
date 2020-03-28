@@ -90,8 +90,14 @@ bool State::operator < (const State &s) const
     // if( (distance < s.distance) || (distance == s.distance && bandwidth < s.bandwidth)){
     //     return true;
     // }
+
     // connect & bandwidth
-    if( (connect < s.connect) || (connect == s.connect && bandwidth < s.bandwidth)){
+    // if( (connect < s.connect) || (connect == s.connect && bandwidth < s.bandwidth)){
+    //     return true;
+    // }
+    
+    // id & connect & bandwidth
+    if(id < s.id || (id == s.id && connect < s.connect) || (id == s.id && connect == s.connect && bandwidth < s.bandwidth) ){
         return true;
     }
     else{

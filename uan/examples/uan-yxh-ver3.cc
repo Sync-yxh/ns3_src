@@ -147,19 +147,19 @@ void Experiment::SetMobility()
     sensors.Get (5)->GetObject<MobilityModel> ()->SetPosition (Vector (1600, 1850, 0));
     sensors.Get (6)->GetObject<MobilityModel> ()->SetPosition (Vector (2200, 1600, 0));
     sensors.Get (7)->GetObject<MobilityModel> ()->SetPosition (Vector (3600, 1750, 0));
-    sensors.Get (8)->GetObject<MobilityModel> ()->SetPosition (Vector (4300, 1700, 0));
+    sensors.Get (8)->GetObject<MobilityModel> ()->SetPosition (Vector (4300, 1900, 0));
 
-    velocity[nodes.Get(9)->GetId()].X = -0.2;
+    velocity[nodes.Get(9)->GetId()].X = -0.1;
     velocity[nodes.Get(9)->GetId()].Y = 0;
-    velocity[nodes.Get(10)->GetId()].X = -0.2;
+    velocity[nodes.Get(10)->GetId()].X = -0.1;
     velocity[nodes.Get(10)->GetId()].Y = 0; 
     // velocity[nodes.Get(9)->GetId()].X = 0;
     // velocity[nodes.Get(9)->GetId()].Y = 0;
     // velocity[nodes.Get(10)->GetId()].X = 0;
     // velocity[nodes.Get(10)->GetId()].Y = 0; 
-    boundary[nodes.Get(9)->GetId()].lowerX = 2200 - 1800;
+    boundary[nodes.Get(9)->GetId()].lowerX = 2200 - 1000;
     boundary[nodes.Get(9)->GetId()].upperX = 2200 + 500;
-    boundary[nodes.Get(10)->GetId()].lowerX = 3600 - 1800;
+    boundary[nodes.Get(10)->GetId()].lowerX = 3600 - 1000;
     boundary[nodes.Get(10)->GetId()].upperX = 3600 + 500;
 }
 
