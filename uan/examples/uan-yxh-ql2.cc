@@ -335,21 +335,33 @@ void Agent::UpdataQ(Step data)
     QTable[data.state] = newQ;
 }
 
-double Agent::CalcMaxNextQ(std::vector<State> stateVec)
+double Agent::CalcMaxNextQ(State nodeState,std::vector<State> stateVec)
 {
     double maxQ = INT_MIN;
+    // bool found = false;
+    // for(std::vector<State>::iterator iter = stateVec.begin(); iter != stateVec.end(); iter++)
+    // {
+    //     State one = *iter;
+    //     if(QTable.find(one) != QTable.end()){
+    //         if(QTable[one] >= maxQ){
+    //             maxQ = QTable[one];
+    //             found = true;
+    //         }
+    //     }
+    // }
+    // if(found == false){
+    //     maxQ = 0;
+    // }
     bool found = false;
     for(std::vector<State>::iterator iter = stateVec.begin(); iter != stateVec.end(); iter++)
     {
         State one = *iter;
-        if(QTable.find(one) != QTable.end()){
-            if(QTable[one] >= maxQ){
-                maxQ = QTable[one];
-                found = true;
-            }
+        if(one.id == nodeState.id){
+            maxQ = QTable[one];
+            found = true;
         }
     }
-    if(found == false){
+    if(found == false || maxQ == INT_MIN){
         maxQ = 0;
     }
 
