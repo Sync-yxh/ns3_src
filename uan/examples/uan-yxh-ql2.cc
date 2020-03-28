@@ -329,7 +329,7 @@ void Agent::UpdataQ(Step data)
         QTable[data.state] = 0;
     }
     double oldQ = QTable[data.state];
-    double maxNextQ = CalcMaxNextQ(data.stateNextVec);
+    double maxNextQ = CalcMaxNextQ(data.state,data.stateNextVec);
 
     double newQ = oldQ + alpha*(data.reward + gamma*maxNextQ - oldQ);
     QTable[data.state] = newQ;

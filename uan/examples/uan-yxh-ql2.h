@@ -62,7 +62,7 @@ public:
 
     void UpdataQ(Step);
 
-    double CalcMaxNextQ(std::vector<State> stateVec);
+    double CalcMaxNextQ(State nodeState,std::vector<State> stateVec);
 
     void NewStateHandle(std::vector<State>); 
 
