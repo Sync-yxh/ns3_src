@@ -318,8 +318,8 @@ int32_t Agent::GetReward(State old, std::vector<State> nextVec)
     }
     // the connect break
     else{
-        //return -3*rewardBase;
-        return 0;
+        return -3*rewardBase;
+        //return 0;
     }
 }
 

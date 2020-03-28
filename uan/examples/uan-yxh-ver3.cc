@@ -147,16 +147,16 @@ void Experiment::SetMobility()
     sensors.Get (5)->GetObject<MobilityModel> ()->SetPosition (Vector (1600, 1850, 0));
     sensors.Get (6)->GetObject<MobilityModel> ()->SetPosition (Vector (2200, 1600, 0));
     sensors.Get (7)->GetObject<MobilityModel> ()->SetPosition (Vector (3600, 1750, 0));
-    sensors.Get (8)->GetObject<MobilityModel> ()->SetPosition (Vector (4300, 1900, 0));
+    sensors.Get (8)->GetObject<MobilityModel> ()->SetPosition (Vector (4300, 1700, 0));
 
-    // velocity[nodes.Get(9)->GetId()].X = -0.01;
-    // velocity[nodes.Get(9)->GetId()].Y = -0.001;
-    // velocity[nodes.Get(10)->GetId()].X = -0.01;
-    // velocity[nodes.Get(10)->GetId()].Y = 0; 
-    velocity[nodes.Get(9)->GetId()].X = 0;
+    velocity[nodes.Get(9)->GetId()].X = -0.2;
     velocity[nodes.Get(9)->GetId()].Y = 0;
-    velocity[nodes.Get(10)->GetId()].X = 0;
+    velocity[nodes.Get(10)->GetId()].X = -0.2;
     velocity[nodes.Get(10)->GetId()].Y = 0; 
+    // velocity[nodes.Get(9)->GetId()].X = 0;
+    // velocity[nodes.Get(9)->GetId()].Y = 0;
+    // velocity[nodes.Get(10)->GetId()].X = 0;
+    // velocity[nodes.Get(10)->GetId()].Y = 0; 
     boundary[nodes.Get(9)->GetId()].lowerX = 2200 - 1800;
     boundary[nodes.Get(9)->GetId()].upperX = 2200 + 500;
     boundary[nodes.Get(10)->GetId()].lowerX = 3600 - 1800;
@@ -173,10 +173,10 @@ void Experiment::UpdateMobility()
             newpos.x += velocity[id].X * gapUpdateMob * 60;
             newpos.y += velocity[id].Y * gapUpdateMob * 60;
             if(newpos.x > boundary[id].upperX || newpos.x < boundary[id].lowerX){
-                // velocity[id].X = -1 * velocity[id].X;
-                // velocity[id].Y = -1 * velocity[id].Y;
-                velocity[id].X = 0;
-                velocity[id].Y = 0;
+                velocity[id].X = -1 * velocity[id].X;
+                velocity[id].Y = -1 * velocity[id].Y;
+                // velocity[id].X = 0;
+                // velocity[id].Y = 0;
             }
             else{
                 nodes.Get(id)->GetObject<MobilityModel>()->SetPosition(newpos);
