@@ -723,7 +723,7 @@ void Experiment::WriteToFile(std::string filename,std::string filenameA)
     for(NodeContainer::Iterator node = sensors.Begin(); node != sensors.End(); node++)
     {
         uint32_t nodeId = (*node)->GetId();
-        uint32_t energy = staticRemainEnergy[nodeId];
+        uint8_t energy = staticRemainEnergy[nodeId];
         std::string str_e = std::to_string(energy);
         file_e << str_e << ",";
     }
@@ -746,7 +746,7 @@ void Experiment::CheckRemainEnergy()
     for(NodeContainer::Iterator node = sensors.Begin(); node != sensors.End(); node++)
     {
         uint32_t nodeId = (*node)->GetId();
-        uint32_t energy = uint32_t((*node)->GetObject<EnergySourceContainer> ()->Get (0)->GetEnergyFraction () * 100);
+        uint8_t energy = ((*node)->GetObject<EnergySourceContainer>()->Get(0)->GetEnergyFraction() )* 100;
         staticRemainEnergy[nodeId] = energy;
     }
 }
@@ -781,9 +781,10 @@ int main (int argc, char *argv[])
   
     Simulator::Stop (Minutes (experiment.simulatorTime));
     Simulator::Run ();
-    Simulator::Destroy ();
 
     experiment.CheckRemainEnergy();
+
+    Simulator::Destroy ();
     experiment.WriteToFile("total.csv","action_node");
     experiment.TeardownSocket();
 

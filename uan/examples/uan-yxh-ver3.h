@@ -100,7 +100,7 @@ public:
     std::map<uint32_t, std::vector<Mac8Address>> staticNextHopBackup;
     std::map<uint32_t, std::vector<Mac8Address>> staticConnectBackup;
 
-    std::map<uint32_t, uint32_t> staticRemainEnergy;
+    std::map<uint32_t, uint8_t> staticRemainEnergy;
 
     EventId eventSendDataID; 
     ExpState expState;
