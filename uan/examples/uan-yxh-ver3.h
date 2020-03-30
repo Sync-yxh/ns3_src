@@ -65,6 +65,8 @@ public:
 
     void ChangeAgentStage();
 
+    void CheckRemainEnergy();
+
     uint32_t nodeNums;
     uint32_t sinkNums;
     uint32_t sensorNums;
@@ -97,6 +99,8 @@ public:
     std::map<uint32_t, std::map<Mac8Address,uint32_t>> staticRecieveRecord;
     std::map<uint32_t, std::vector<Mac8Address>> staticNextHopBackup;
     std::map<uint32_t, std::vector<Mac8Address>> staticConnectBackup;
+
+    std::map<uint32_t, uint32_t> staticRemainEnergy;
 
     EventId eventSendDataID; 
     ExpState expState;

@@ -149,9 +149,9 @@ void Experiment::SetMobility()
     sensors.Get (7)->GetObject<MobilityModel> ()->SetPosition (Vector (3600, 1750, 0));
     sensors.Get (8)->GetObject<MobilityModel> ()->SetPosition (Vector (4300, 1900, 0));
 
-    velocity[nodes.Get(9)->GetId()].X = -0.1;
+    velocity[nodes.Get(9)->GetId()].X = -0.5;
     velocity[nodes.Get(9)->GetId()].Y = 0;
-    velocity[nodes.Get(10)->GetId()].X = -0.1;
+    velocity[nodes.Get(10)->GetId()].X = -0.5;
     velocity[nodes.Get(10)->GetId()].Y = 0; 
     // velocity[nodes.Get(9)->GetId()].X = 0;
     // velocity[nodes.Get(9)->GetId()].Y = 0;
@@ -713,7 +713,21 @@ void Experiment::WriteToFile(std::string filename,std::string filenameA)
         std::string str_a = std::to_string(id);
         file_a << str_a ;
         file_a.close();
-        }
+    }
+
+    std::string nameofeg = std::string("energy.csv");
+    std::ofstream file_e(nameofeg.c_str());
+    if(file_e.is_open()){
+        NS_LOG_LOGIC("Open File");
+    }
+    for(NodeContainer::Iterator node = sensors.Begin(); node != sensors.End(); node++)
+    {
+        uint32_t nodeId = (*node)->GetId();
+        uint32_t energy = staticRemainEnergy[nodeId];
+        std::string str_e = std::to_string(energy);
+        file_e << str_e << ",";
+    }
+    file_e.close();
 }
 
 void Experiment::ChangeAgentStage()
@@ -724,6 +738,16 @@ void Experiment::ChangeAgentStage()
         uint32_t nodeId = (*node)->GetId();
         //NS_UNUSED(nodeId);
         agent[nodeId].stage = Agent::Stage::TEST;
+    }
+}
+
+void Experiment::CheckRemainEnergy()
+{
+    for(NodeContainer::Iterator node = sensors.Begin(); node != sensors.End(); node++)
+    {
+        uint32_t nodeId = (*node)->GetId();
+        uint32_t energy = uint32_t((*node)->GetObject<EnergySourceContainer> ()->Get (0)->GetEnergyFraction () * 100);
+        staticRemainEnergy[nodeId] = energy;
     }
 }
 
@@ -759,6 +783,7 @@ int main (int argc, char *argv[])
     Simulator::Run ();
     Simulator::Destroy ();
 
+    experiment.CheckRemainEnergy();
     experiment.WriteToFile("total.csv","action_node");
     experiment.TeardownSocket();
 
