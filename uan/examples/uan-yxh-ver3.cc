@@ -42,7 +42,7 @@ void Experiment::SetNodes()
     nodeNums = nodes.GetN();
 
     BasicEnergySourceHelper energySourceHelper;
-    energySourceHelper.Set ("BasicEnergySourceInitialEnergyJ", DoubleValue (90000000));
+    energySourceHelper.Set ("BasicEnergySourceInitialEnergyJ", DoubleValue (30000000));
     energySourceHelper.Install (nodes);
     
     for(NodeContainer::Iterator node = nodes.Begin(); node != nodes.End(); node++)
@@ -723,7 +723,7 @@ void Experiment::WriteToFile(std::string filename,std::string filenameA)
     for(NodeContainer::Iterator node = sensors.Begin(); node != sensors.End(); node++)
     {
         uint32_t nodeId = (*node)->GetId();
-        uint8_t energy = staticRemainEnergy[nodeId];
+        uint32_t energy = staticRemainEnergy[nodeId];
         std::string str_e = std::to_string(energy);
         file_e << str_e << ",";
     }
@@ -746,7 +746,7 @@ void Experiment::CheckRemainEnergy()
     for(NodeContainer::Iterator node = sensors.Begin(); node != sensors.End(); node++)
     {
         uint32_t nodeId = (*node)->GetId();
-        uint8_t energy = ((*node)->GetObject<EnergySourceContainer>()->Get(0)->GetEnergyFraction() )* 100;
+        uint32_t energy = ((*node)->GetObject<EnergySourceContainer>()->Get(0)->GetEnergyFraction() )* 10000;
         staticRemainEnergy[nodeId] = energy;
     }
 }
