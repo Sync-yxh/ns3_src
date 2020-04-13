@@ -387,6 +387,8 @@ void Experiment::ScheduleSendData()
             tag.SetDestAddress(dst);
             tag.SetRelayAddress( Mac8Address::ConvertFrom(node->GetDevice(0)->GetAddress()) );
             tag.SetPacketIndex(dataPktIndex[node]);
+            uint32_t depth = node->GetObject<MobilityModel> ()->GetPosition().y;
+            tag.SetDepth(depth);
             pkt->AddPacketTag(tag);
             dataPktIndex[node] ++;
 
@@ -530,6 +532,7 @@ void Experiment::RecvHandle(Ptr<Socket> socket,Ptr<Packet> pkt)
                 uint32_t m_depth = node->GetObject<MobilityModel>()->GetPosition().y;
                 if(depth > m_depth){
                     tag.SetRelayAddress(self);
+                    tag.SetDepth(m_depth);
                     if(ChooseNextHop(node, dst))
                     {
                         tag.SetDestAddress(dst);
@@ -547,14 +550,18 @@ void Experiment::RecvHandle(Ptr<Socket> socket,Ptr<Packet> pkt)
             }
             if(sensors.Contains(nodeId)){
                 tag.SetRelayAddress(self);
-
-                if(ChooseNextHop(node, dst))
-                {
-                    tag.SetDestAddress(dst);
-                    pkt->RemoveAllPacketTags();
-                    pkt->AddPacketTag(tag);
-                    SendSinglePacket(node,pkt,dst,false);
-                    NS_LOG_INFO( "Time: " << Simulator::Now ().GetSeconds () << "s" << " Node " << self << " relay data pkt  for Node " << src << " pkt No "<<+index);
+                uint32_t depth = tag.GetDepth();
+                uint32_t m_depth = node->GetObject<MobilityModel>()->GetPosition().y;
+                if(depth > m_depth){
+                    tag.SetRelayAddress(self);
+                    tag.SetDepth(m_depth);
+                    if(ChooseNextHop(node, dst))
+                    {
+                        tag.SetDestAddress(dst);
+                        pkt->RemoveAllPacketTags();
+                        pkt->AddPacketTag(tag);
+                        SendSinglePacket(node,pkt,dst,false);
+                    }
                 }
             }
         }
