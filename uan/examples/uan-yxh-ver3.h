@@ -100,6 +100,12 @@ public:
     std::map<uint32_t, std::vector<Mac8Address>> staticNextHopBackup;
     std::map<uint32_t, std::vector<Mac8Address>> staticConnectBackup;
 
+    std::map<uint32_t, std::map<Mac8Address,uint8_t>>  staticForEDBFenergy;
+    std::map<uint32_t, std::map<Mac8Address,double>>  staticForEDBFdepth;
+    Mac8Address EDBFnext;
+    bool EDBFfind = false;
+    bool EDBFready = false;
+
     std::map<uint32_t, uint32_t> staticRemainEnergy;
 
     EventId eventSendDataID; 

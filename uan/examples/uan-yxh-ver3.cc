@@ -288,6 +288,10 @@ void Experiment::ScheduleBeacon()
             staticSumPacket[staticSumPacket.size()-1] += iter->second.size();
         }
     }
+    if(protocal == 5){
+        EDBFfind = false;
+        EDBFready = true;
+    }
 
     for(NodeContainer::Iterator nodeIter = nodes.Begin(); nodeIter != nodes.End(); nodeIter++)
     {
@@ -332,6 +336,11 @@ void Experiment::ScheduleBeacon()
         staticSendNum[nodeId] = 0;
         staticNextHopBackup[nodeId].clear();
         staticConnectBackup[nodeId].clear();
+
+        if(protocal == 5){
+            staticForEDBFenergy[nodeId].clear();
+            staticForEDBFdepth[nodeId].clear();
+        }
 
         QstateVector[nodeId].clear();
 
@@ -587,6 +596,10 @@ void Experiment::StatePacketHandle(Ptr<Node> node,  UanPacketTag tag)
         State s(src, connect, m_depth-depth, bandwidth);
         QstateVector[nodeId].push_back(s);
         staticNextHopBackup[nodeId].push_back(src);
+        if(protocal == 5){
+            staticForEDBFenergy[nodeId][src] = energy;
+            staticForEDBFdepth[nodeId][src] = (m_depth - depth) / 1500.0;
+        }
     }
     else if(depth > m_depth)
     {
@@ -660,6 +673,47 @@ bool Experiment::ChooseNextHop(Ptr<Node> node, Mac8Address& next)
         staticActionOtherProt[nodeId].push_back(next);
         return true;
     } break;
+    case 5:{     // EDBF
+        if(staticNextHopBackup[nodeId].empty()){
+            return false;
+        }
+        if(EDBFready == false){
+            next = staticNextHopBackup[nodeId].front();
+            staticActionOtherProt[nodeId].push_back(next);
+            return true;
+        }
+        else{
+            if(EDBFfind){
+                next = EDBFnext;
+            }
+            else{
+                double totalE = 0;
+                for(std::vector<Mac8Address>::iterator i= staticNextHopBackup[nodeId].begin(); i != staticNextHopBackup[nodeId].end();i++)
+                {
+                    Mac8Address src = (*i);
+                    uint8_t et = staticForEDBFenergy[nodeId][src];
+                    NS_UNUSED(et);
+                    totalE += staticForEDBFenergy[nodeId][src];
+                }
+                totalE = totalE / staticNextHopBackup[nodeId].size();
+                EDBFnext = staticNextHopBackup[nodeId][0];
+                double maxW = INT_MIN;
+                for(std::vector<Mac8Address>::iterator i= staticNextHopBackup[nodeId].begin(); i != staticNextHopBackup[nodeId].end();i++)
+                {
+                    Mac8Address src = (*i);
+                    double w =  20 * staticForEDBFenergy[nodeId][src] / double(totalE) + 1 * staticForEDBFdepth[nodeId][src];
+                    if(w > maxW){
+                        maxW = w;
+                        EDBFnext = src;
+                    }
+                }
+                next = EDBFnext;
+                //EDBFfind = true;
+            }
+            staticActionOtherProt[nodeId].push_back(next);
+            return true;
+        }
+    }
     default:
         break;
     }
@@ -700,6 +754,9 @@ void Experiment::WriteToFile(std::string filename,std::string filenameA)
         case 4:{
             action = staticActionOtherProt[nodeId];
         } break;
+        case 5:{
+            action = staticActionOtherProt[nodeId];
+        }
         default:
             break;
         }
