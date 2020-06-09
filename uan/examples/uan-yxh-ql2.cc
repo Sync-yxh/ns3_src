@@ -253,7 +253,15 @@ void Agent::ChooseAction(std::vector<State> QstateVec)
             }
             if(maxQ2 ==  maxQ1){
                 nodeActionVec.push_back(Mac8Address(maxS1.id));
-                nodeActionVec.push_back(Mac8Address(maxS2.id));
+                // nodeActionVec.push_back(Mac8Address(maxS2.id));
+                // Ptr<UniformRandomVariable> uniformRandomVariable = CreateObject<UniformRandomVariable> ();
+                // double randomProb = uniformRandomVariable->GetValue (0, 1);
+                // if(randomProb > 0.1){
+                //     nodeActionVec.push_back(Mac8Address(maxS1.id));
+                // }
+                // else{
+                //     nodeActionVec.push_back(Mac8Address(maxS2.id));
+                // }
                 staticActionVec.push_back(Mac8Address(maxS1.id));
                 staticActionVec.push_back(Mac8Address(maxS2.id));
             }
